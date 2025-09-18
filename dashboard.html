@@ -66,12 +66,42 @@
         </main>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    
-    <script src="firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+        
+        // Firebase 웹 앱 설정 (사용자 제공)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJJLSOPg-nExI-nISWbS-NPwIPsiO3-VI",
+            authDomain: "growth-engine-9c6ab.firebaseapp.com",
+            projectId: "growth-engine-9c6ab",
+            storageBucket: "growth-engine-9c6ab.firebasestorage.app",
+            messagingSenderId: "90122365916",
+            appId: "1:90122365916:web:8256b5fdd912459e067d19",
+            measurementId: "G-ECC3RQ1EZH"
+        };
+        
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
+        // Google 로그인 로직
+        const provider = new GoogleAuthProvider();
+        document.getElementById('google-login-btn').addEventListener('click', async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                console.log("Google 로그인 성공:", user);
+                // 로그인 성공 후 대시보드 로드 등 필요한 작업 수행
+            } catch (error) {
+                console.error("Google 로그인 실패:", error.code, error.message);
+                document.getElementById('login-error').textContent = `로그인 실패: ${error.message}`;
+            }
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     
