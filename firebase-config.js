@@ -1,6 +1,9 @@
 // firebase-config.js
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// [주석] 이 파일은 다른 스크립트에서 firebase 서비스를 사용하기 전에
+// Firebase 앱을 초기화하는 역할을 한다.
+
+// v7.20.0 이후 버전의 Firebase JS SDK의 경우, measurementId는 선택 사항.
 const firebaseConfig = {
   apiKey: "AIzaSyDJJLSOPg-nExI-nISWbS-NPwIPsiO3-VI",
   authDomain: "growth-engine-9c6ab.firebaseapp.com",
@@ -12,12 +15,12 @@ const firebaseConfig = {
 };
 
 // Firebase 앱 초기화
-// [수정] compat 라이브러리를 사용하므로 firebase.initializeApp()을 그대로 사용합니다.
+// 이 코드를 통해 dashboard.html에서 로드한 Firebase 라이브러리가 활성화된다.
 firebase.initializeApp(firebaseConfig);
 
-// 다른 파일에서 사용할 수 있도록 Firebase 서비스들을 export 합니다.
-// [수정] compat 버전에서는 아래와 같이 auth, db를 전역 firebase 객체에서 가져옵니다.
+// 다른 파일(dashboard.js 등)에서 `firebase.auth()`나 `firebase.firestore()` 같은
+// 전역 `firebase` 객체를 통해 서비스에 접근할 수 있다.
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// [수정] 불필요한 닫는 괄호 '}'를 제거하여 문법 오류를 수정했습니다.
+// [수정] 파일 끝에 있던 불필요한 닫는 중괄호 '}'를 제거하여 구문 오류를 해결했다.
