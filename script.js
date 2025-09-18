@@ -1,36 +1,20 @@
-/* [수정 완료] script.js */
 document.addEventListener('DOMContentLoaded', function() {
     // Custom Cursor Logic
     const cursorDot = document.querySelector("#cursor-dot");
     const cursorOutline = document.querySelector("#cursor-outline");
 
-    let mouseX = 0;
-    let mouseY = 0;
-    let isMoving = false;
-
     window.addEventListener("mousemove", function (e) {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        if (!isMoving) {
-            isMoving = true;
-            // [수정] requestAnimationFrame을 사용하여 렌더링 최적화
-            // 브라우저의 다음 프레임에 맞춰 한 번만 위치를 업데이트하여 렉을 줄인다.
-            requestAnimationFrame(updateCursor);
-        }
-    });
+        const posX = e.clientX;
+        const posY = e.clientY;
 
-    function updateCursor() {
-        cursorDot.style.left = `${mouseX}px`;
-        cursorDot.style.top = `${mouseY}px`;
+        cursorDot.style.left = `${posX}px`;
+        cursorDot.style.top = `${posY}px`;
 
         cursorOutline.animate({
-            left: `${mouseX}px`,
-            top: `${mouseY}px`
+            left: `${posX}px`,
+            top: `${posY}px`
         }, { duration: 500, fill: "forwards" });
-
-        isMoving = false;
-    }
-
+    });
 
     // Navigation Scroll Effect
     const nav = document.querySelector('nav');
@@ -61,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Achievements Chart (Chart.js)
     const ctx = document.getElementById('revenueChart');
     if (ctx) {
-        // 데이터 출처: 25년 08월 _ 최재영 이력서.pdf
+        // 데이터 출처: 25년 08월 _ 최재영 이력서.pdf [1]
         // 월 매출 300만원 → 5,900만원 달성 (퇴사전 3개월 평균 4900만)
         // 이 데이터를 기반으로 성장 과정을 시각적으로 표현
         const revenueData = {
