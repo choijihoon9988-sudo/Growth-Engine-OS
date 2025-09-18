@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- STATE MANAGEMENT ---
     let state = {
-        logs: {}, // { 'YYYY-MM-DD': { weight: 70, goal: 3000, meals:[], workouts:[] } }
-        currentDate: new Date().toISOString().split('T')[0]
+        logs: {}, // { 'YYYY-MM-DD': { weight: 70, goal: 3000, meals:, workouts: } }
+        currentDate: new Date().toISOString().split('T')
     };
 
     // --- DOM ELEMENTS ---
@@ -47,17 +47,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let calorieChart, bodyMetricChart;
 
     function initCharts() {
-        if (!calorieChartEl || !bodyMetricChartEl) {
-            console.error("차트 엘리먼트를 찾을 수 없습니다. HTML 구조를 확인하세요.");
-            return;
-        }
-
         const calorieCtx = calorieChartEl.getContext('2d');
         calorieChart = new Chart(calorieCtx, {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [],
+                    data: ,
                     backgroundColor: [ 'var(--primary-color)', 'var(--surface-light-color)'],
                     borderWidth: 0,
                     borderRadius: 10,
@@ -74,20 +69,19 @@ document.addEventListener('DOMContentLoaded', function() {
         bodyMetricChart = new Chart(bodyMetricCtx, {
             type: 'line',
             data: {
-                labels: [],
+                labels:,
                 datasets: [
                     {
                         label: '체중 (kg)',
-                        data: [],
+                        data:,
                         borderColor: 'var(--success-color)',
                         yAxisID: 'yWeight',
                     },
                     {
                         label: '섭취 칼로리 (kcal)',
-                        data: [],
+                        data:,
                         borderColor: 'var(--primary-color)',
                         yAxisID: 'yCalories',
-                        hidden: false // 추가: 데이터셋 가시성 설정
                     }
                 ]
             },
@@ -110,12 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const savedState = localStorage.getItem('physiqueArchitectState');
         if (savedState) {
             state = JSON.parse(savedState);
-            // 과거 데이터 구조가 다른 경우를 대비해 기본값 설정
-            if (!state.logs[state.currentDate]) {
-                state.logs[state.currentDate] = { weight: '', goal: 3000, meals: [], workouts: [] };
-            }
-        } else {
-            state.logs[state.currentDate] = { weight: '', goal: 3000, meals: [], workouts: [] };
+        }
+        if (!state.logs) {
+            state.logs = { weight: '', goal: 3000, meals:, workouts: };
         }
     }
 
@@ -128,21 +119,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderDashboard() {
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog) {
-            console.error("오늘의 기록이 없습니다.");
-            return;
-        }
-        weightInput.value = todayLog.weight || '';
-        goalInput.value = todayLog.goal || 3000;
-        goalEl.textContent = todayLog.goal || 3000;
+        const todayLog = state.logs;
+        weightInput.value = todayLog.weight |
+
+| '';
+        goalInput.value = todayLog.goal |
+
+| 3000;
+        goalEl.textContent = todayLog.goal |
+
+| 3000;
     }
 
     function renderMeals() {
         mealLogContainer.innerHTML = '';
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog || !todayLog.meals) return;
-        todayLog.meals.forEach((meal, index) => {
+        state.logs.meals.forEach((meal, index) => {
             const mealCard = document.createElement('div');
             mealCard.className = 'meal-card';
             mealCard.innerHTML = `
@@ -158,9 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderWorkouts() {
         workoutLogContainer.innerHTML = '';
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog || !todayLog.workouts) return;
-        todayLog.workouts.forEach((workout, index) => {
+        state.logs.workouts.forEach((workout, index) => {
             const workoutCard = document.createElement('div');
             workoutCard.className = 'workout-card';
             workoutCard.dataset.index = index;
@@ -184,10 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${workout.sets.map((set, setIndex) => `
                                 <tr data-set-index="${setIndex}">
                                     <td>${setIndex + 1}</td>
-                                    <td>${set.previous || '기록 없음'}</td>
-                                    <td><input type="number" class="weight-input" value="${set.weight || ''}"></td>
-                                    <td><input type="number" class="reps-input" value="${set.reps || ''}"></td>
-                                    <td><button class="set-complete-btn ${set.completed ? 'completed' : ''}">${set.completed ? '✔' : '완료'}</button></td>
+                                    <td>${set.previous}</td>
+                                    <td><input type="number" class="weight-input" value="${set.weight}"></td>
+                                    <td><input type="number" class="reps-input" value="${set.reps}"></td>
+                                    <td><button class="set-complete-btn ${set.completed? 'completed' : ''}">${set.completed? '✔' : '완료'}</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -205,48 +194,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateCharts() {
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog) return;
-        
         // Calorie Chart
-        const totalCalories = (todayLog.meals || []).reduce((sum, meal) => sum + meal.calories, 0);
+        const todayLog = state.logs;
+        const totalCalories = todayLog.meals.reduce((sum, meal) => sum + meal.calories, 0);
         consumedEl.textContent = totalCalories;
-        const goal = todayLog.goal || 3000;
+        const goal = todayLog.goal |
+
+| 3000;
         const remaining = Math.max(0, goal - totalCalories);
-        calorieChart.data.datasets[0].data = [totalCalories, remaining];
+        calorieChart.data.datasets.data = [totalCalories, remaining];
         calorieChart.update();
 
         // Body Metric Chart
-        const sortedDates = Object.keys(state.logs).filter(date => state.logs[date].weight || (state.logs[date].meals && state.logs[date].meals.length > 0)).sort().slice(-365);
-        const weeklyData = {};
+        const sortedDates = Object.keys(state.logs).sort().slice(-365); // Last 52 weeks (approx)
+        const labels =;
+        const weightData =;
+        const calorieData =;
         
+        // Aggregate by week
+        const weeklyData = {};
         sortedDates.forEach(date => {
             const week = getWeekNumber(new Date(date));
             if (!weeklyData[week]) {
-                weeklyData[week] = { weights: [], calories: [], count: 0 };
+                weeklyData[week] = { weights:, calories:, count: 0 };
             }
             const log = state.logs[date];
             if (log.weight) weeklyData[week].weights.push(parseFloat(log.weight));
-            const totalCals = (log.meals || []).reduce((sum, meal) => sum + meal.calories, 0);
+            const totalCals = log.meals.reduce((sum, meal) => sum + meal.calories, 0);
             if (totalCals > 0) weeklyData[week].calories.push(totalCals);
         });
-
-        const labels = [];
-        const weightData = [];
-        const calorieData = [];
 
         Object.keys(weeklyData).sort().forEach(week => {
             labels.push(`Week ${week}`);
             const weekLog = weeklyData[week];
-            const avgWeight = weekLog.weights.length ? (weekLog.weights.reduce((a, b) => a + b, 0) / weekLog.weights.length).toFixed(1) : null;
-            const avgCalories = weekLog.calories.length ? Math.round(weekLog.calories.reduce((a, b) => a + b, 0) / weekLog.calories.length) : null;
+            const avgWeight = weekLog.weights.length? (weekLog.weights.reduce((a, b) => a + b, 0) / weekLog.weights.length).toFixed(1) : null;
+            const avgCalories = weekLog.calories.length? Math.round(weekLog.calories.reduce((a, b) => a + b, 0) / weekLog.calories.length) : null;
             weightData.push(avgWeight);
             calorieData.push(avgCalories);
         });
 
         bodyMetricChart.data.labels = labels;
-        bodyMetricChart.data.datasets[0].data = weightData;
-        bodyMetricChart.data.datasets[1].data = calorieData;
+        bodyMetricChart.data.datasets.data = weightData;
+        bodyMetricChart.data.datasets.[1]data = calorieData;
         bodyMetricChart.update();
     }
     
@@ -263,22 +252,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Dashboard Inputs
     weightInput.addEventListener('change', (e) => {
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog) {
-            console.error("오늘의 기록 객체를 찾을 수 없습니다.");
-            return;
-        }
-        todayLog.weight = e.target.value;
+        state.logs.weight = e.target.value;
         saveData();
         updateCharts();
     });
     goalInput.addEventListener('change', (e) => {
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog) {
-            console.error("오늘의 기록 객체를 찾을 수 없습니다.");
-            return;
-        }
-        todayLog.goal = parseInt(e.target.value) || 3000;
+        state.logs.goal = parseInt(e.target.value) |
+
+| 3000;
         saveData();
         renderDashboard();
         updateCharts();
@@ -306,47 +287,48 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('natural-meal-input').value = '';
         mealAnalysisResult.style.display = 'none';
     });
-    
-    if (document.getElementById('analyze-meal-btn')) { // 요소 존재 확인
-        document.getElementById('analyze-meal-btn').addEventListener('click', async () => {
-            const text = document.getElementById('natural-meal-input').value;
-            if (!text) return;
+
+    document.getElementById('analyze-meal-btn').addEventListener('click', async () => {
+        const text = document.getElementById('natural-meal-input').value;
+        if (!text) return;
+        
+        // --- AI SIMULATION ---
+        // In a real app, this would be an API call to a backend service.
+        // The backend would then call a service like Edamam's NLP API.
+        const result = await getCaloriesFromAI(text);
+        currentAnalyzedMeal = result;
+        
+        analyzedItemsList.innerHTML = '';
+        result.items.forEach(item => {
+            const li = document.createElement('li');
             
-            const result = await getCaloriesFromAI(text);
-            currentAnalyzedMeal = result;
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = item.name;
             
-            analyzedItemsList.innerHTML = '';
-            result.items.forEach(item => {
-                const li = document.createElement('li');
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.textContent = item.name;
-                
-                const qtySelect = document.createElement('select');
-                qtySelect.dataset.itemName = item.name;
-                for(let i = 1; i <= 10; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `${i} 개/인분`;
-                    if (i === item.quantity) option.selected = true;
-                    qtySelect.appendChild(option);
-                }
-                qtySelect.addEventListener('change', updateModalCalories);
+            const qtySelect = document.createElement('select');
+            qtySelect.dataset.itemName = item.name;
+            for(let i = 1; i <= 10; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${i} 개/인분`;
+                if (i === item.quantity) option.selected = true;
+                qtySelect.appendChild(option);
+            }
+            qtySelect.addEventListener('change', updateModalCalories);
 
-                const calSpan = document.createElement('span');
-                calSpan.textContent = `${item.calories * item.quantity} kcal`;
-                calSpan.dataset.baseCalories = item.calories;
+            const calSpan = document.createElement('span');
+            calSpan.textContent = `${item.calories * item.quantity} kcal`;
+            calSpan.dataset.baseCalories = item.calories;
 
-                li.appendChild(nameSpan);
-                li.appendChild(qtySelect);
-                li.appendChild(calSpan);
-                analyzedItemsList.appendChild(li);
-            });
-
-            updateModalCalories();
-            mealAnalysisResult.style.display = 'block';
+            li.appendChild(nameSpan);
+            li.appendChild(qtySelect);
+            li.appendChild(calSpan);
+            analyzedItemsList.appendChild(li);
         });
-    }
+
+        updateModalCalories();
+        mealAnalysisResult.style.display = 'block';
+    });
 
     function updateModalCalories() {
         let total = 0;
@@ -362,94 +344,71 @@ document.addEventListener('DOMContentLoaded', function() {
         modalTotalCalories.textContent = total;
     }
 
-    if (document.getElementById('confirm-add-meal-btn')) { // 요소 존재 확인
-        document.getElementById('confirm-add-meal-btn').addEventListener('click', () => {
-            const mealName = document.getElementById('natural-meal-input').value.split(',')[0] || '기록된 식사';
-            const items = [];
-            let totalCalories = 0;
+    document.getElementById('confirm-add-meal-btn').addEventListener('click', () => {
+        const mealName = document.getElementById('natural-meal-input').value.split(',') |
 
-            analyzedItemsList.querySelectorAll('li').forEach(li => {
-                const name = li.querySelector('span:first-child').textContent;
-                const quantity = li.querySelector('select').value;
-                const caloriesText = li.querySelector('span:last-child').textContent;
-                const calories = parseInt(caloriesText.replace(' kcal', ''));
-                items.push(`${name} x${quantity}`);
-                totalCalories += calories;
-            });
+| '기록된 식사';
+        const items =;
+        let totalCalories = 0;
 
-            const todayLog = state.logs[state.currentDate];
-            if (todayLog) {
-                todayLog.meals.push({
-                    name: mealName,
-                    items: items,
-                    calories: totalCalories
-                });
-                
-                saveData();
-                renderAll();
-            }
-            mealModal.style.display = 'none';
+        analyzedItemsList.querySelectorAll('li').forEach(li => {
+            const name = li.querySelector('span:first-child').textContent;
+            const quantity = li.querySelector('select').value;
+            const calories = parseInt(li.querySelector('span:last-child').textContent);
+            items.push(`${name} x${quantity}`);
+            totalCalories += calories;
         });
-    }
+
+        state.logs.meals.push({
+            name: mealName,
+            items: items,
+            calories: totalCalories
+        });
+        
+        saveData();
+        renderAll();
+        mealModal.style.display = 'none';
+    });
 
     async function getCaloriesFromAI(text) {
+        // This is a MOCK function. A real implementation would use a server-side call to a nutrition API.
         console.log("Simulating AI analysis for:", text);
-        const items = [];
-        const words = text.replace(/,/g, ' ').split(/\s+/).filter(word => word.length > 0);
-        
-        let i = 0;
-        while(i < words.length) {
-            let currentItem = { name: '', quantity: 1, calories: 0 };
-            let found = false;
-            
-            // 다중 단어 음식명 먼저 찾기 (예: '닭가슴살')
-            for (const food of Object.keys(MOCK_FOOD_CALORIES).sort((a, b) => b.length - a.length)) {
-                if (words[i] === food) {
-                    currentItem.name = food;
-                    currentItem.calories = MOCK_FOOD_CALORIES[food];
-                    found = true;
-                    i++;
-                    break;
-                }
-            }
+        const items =;
+        const words = text.replace(/,/g, ' ').split(/\s+/);
+        let currentItem = { name: '', quantity: 1, calories: 0 };
 
-            if (!found) { // 단일 단어 처리
-                const word = words[i];
-                const num = parseInt(word);
-                
-                if (!isNaN(num) && num < 1000) {
-                    // 수량 처리 로직은 복잡하므로 간단히 건너뛰고 뒤에 오는 음식에 적용
-                    i++;
-                    continue;
-                } else if (MOCK_FOOD_CALORIES[word]) {
-                    currentItem.name = word;
-                    currentItem.calories = MOCK_FOOD_CALORIES[word];
-                    found = true;
-                    i++;
+        words.forEach(word => {
+            const num = parseInt(word);
+            if (!isNaN(num) && num < 1000) { // Likely a quantity or part of a measurement
+                if (word.includes('g')) {
+                    // handle grams if API supports it
                 } else {
-                    i++;
-                    continue;
+                    currentItem.quantity = num;
                 }
+            } else if (MOCK_FOOD_CALORIES[word]) {
+                if (currentItem.name) { // Finalize previous item
+                    if(currentItem.calories > 0) items.push(currentItem);
+                    currentItem = { name: '', quantity: 1, calories: 0 };
+                }
+                currentItem.name += word + ' ';
+                currentItem.calories += MOCK_FOOD_CALORIES[word];
+            } else {
+                currentItem.name += word + ' ';
             }
-
-            // 앞뒤에 있는 수량 찾기
-            const prevWord = words[i - 2];
-            if(prevWord && !isNaN(parseInt(prevWord)) && parseInt(prevWord) < 100) {
-                 currentItem.quantity = parseInt(prevWord);
-            }
-            
-            // 단어 뒤에 바로 수량이 오는 경우
-            const nextWord = words[i];
-            if(nextWord && !isNaN(parseInt(nextWord)) && parseInt(nextWord) < 100) {
-                currentItem.quantity = parseInt(nextWord);
-                i++;
-            }
-            
-            if (currentItem.name && currentItem.calories > 0) {
-                items.push(currentItem);
-            }
+        });
+        if (currentItem.name && currentItem.calories > 0) {
+            currentItem.name = currentItem.name.trim();
+            items.push(currentItem);
         }
         
+        // Handle cases like "계란 3개"
+        const eggMatch = text.match(/계란\s*(\d+)\s*개/);
+        if (eggMatch) {
+            const existingEgg = items.find(i => i.name.includes('계란'));
+            if (existingEgg) existingEgg.quantity = parseInt(eggMatch[1]);
+            else items.push({ name: '계란', quantity: parseInt(eggMatch[1]), calories: MOCK_FOOD_CALORIES['계란'] });
+        }
+
         return { items };
     }
 
@@ -479,7 +438,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderWorkoutSelection(category = 'all', searchTerm = '') {
         workoutSelectionList.innerHTML = '';
         MOCK_EXERCISE_DB
-           .filter(ex => (category === 'all' || ex.category === category) && ex.name.toLowerCase().includes(searchTerm.toLowerCase()))
+           .filter(ex => (category === 'all' |
+
+| ex.category === category) && ex.name.toLowerCase().includes(searchTerm.toLowerCase()))
            .forEach(ex => {
                 const li = document.createElement('li');
                 li.textContent = ex.name;
@@ -491,12 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function addWorkoutToLog(e) {
         const name = e.target.dataset.name;
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog) {
-            console.error("오늘의 기록 객체를 찾을 수 없습니다.");
-            return;
-        }
-        todayLog.workouts.push({
+        state.logs.workouts.push({
             name: name,
             sets: [{ previous: '기록 없음', weight: '', reps: '', completed: false }]
         });
@@ -511,22 +467,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!workoutCard) return;
         
         const workoutIndex = parseInt(workoutCard.dataset.index);
-        const todayLog = state.logs[state.currentDate];
-        if (!todayLog || !todayLog.workouts[workoutIndex]) return;
 
         if (target.closest('.delete-workout-btn')) {
-            todayLog.workouts.splice(workoutIndex, 1);
+            state.logs.workouts.splice(workoutIndex, 1);
         } else if (target.classList.contains('add-set-btn')) {
-            todayLog.workouts[workoutIndex].sets.push({ previous: '기록 없음', weight: '', reps: '', completed: false });
+            state.logs.workouts[workoutIndex].sets.push({ previous: '기록 없음', weight: '', reps: '', completed: false });
         } else if (target.classList.contains('set-complete-btn')) {
             const setIndex = parseInt(target.closest('tr').dataset.setIndex);
-            const workout = todayLog.workouts[workoutIndex];
+            const workout = state.logs.workouts[workoutIndex];
             const set = workout.sets[setIndex];
-            if (set) { // set이 존재하는지 확인
-                set.completed = !set.completed;
-                if (set.completed) {
-                    startRestTimer(workoutCard);
-                }
+            set.completed =!set.completed;
+            if (set.completed) {
+                startRestTimer(workoutCard);
             }
         }
         saveData();
@@ -536,11 +488,13 @@ document.addEventListener('DOMContentLoaded', function() {
     workoutLogContainer.addEventListener('change', e => {
         const target = e.target;
         const workoutCard = target.closest('.workout-card');
-        if (!workoutCard || !(target.classList.contains('weight-input') || target.classList.contains('reps-input'))) return;
+        if (!workoutCard ||!(target.classList.contains('weight-input') |
+
+| target.classList.contains('reps-input'))) return;
 
         const workoutIndex = parseInt(workoutCard.dataset.index);
         const setIndex = parseInt(target.closest('tr').dataset.setIndex);
-        const workout = state.logs[state.currentDate].workouts[workoutIndex];
+        const workout = state.logs.workouts[workoutIndex];
         const set = workout.sets[setIndex];
 
         if (target.classList.contains('weight-input')) {
@@ -566,16 +520,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (timeLeft <= 0) {
                 clearInterval(restTimerInterval);
                 timerEl.style.display = 'none';
-                if(alarmSound) { // 오디오 요소 존재 여부 확인
-                    alarmSound.play();
-                }
+                alarmSound.play();
             }
         }, 1000);
     }
 
 
     // --- MODAL CLOSE LOGIC ---
-    document.querySelectorAll('.modal .close-btn').forEach(btn => {
+    document.querySelectorAll('.modal.close-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             btn.closest('.modal').style.display = 'none';
         });
